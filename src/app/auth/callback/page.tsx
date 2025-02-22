@@ -10,11 +10,20 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const supabase = createClient()
 
-    supabase.auth.onAuthStateChange((event) => {
+    if (!supabase) {
+      console.error('Supabase client could not be created')
+      return
+    }
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
         router.push('/')
       }
     })
+
+    return () => subscription.unsubscribe()
   }, [router])
 
   return null
