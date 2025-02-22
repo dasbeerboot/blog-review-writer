@@ -22,28 +22,46 @@ interface AuthModalProps {
   onClose: () => void
 }
 
-type CustomProvider = Provider | 'naver' | 'kakao'
+type CustomProvider = Provider | 'kakao'
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [confirmPassword, setConfirmPassword] = React.useState("")
-  const supabase = createClient()
 
   const handleSocialLogin = async (provider: CustomProvider) => {
+    const supabase = createClient()
+    if (!supabase) {
+      toast.error('인증 서비스 초기화에 실패했습니다.')
+      return
+    }
+
     try {
-      const { error: _error } = await supabase.auth.signInWithOAuth({
+      console.log('소셜 로그인 시도:', provider)
+      const { data, error: _error } = await supabase.auth.signInWithOAuth({
         provider: provider as Provider,
         options: {
-          redirectTo: `${location.origin}/auth/callback`,
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       })
 
+      console.log('소셜 로그인 응답:', { data, error: _error })
+
       if (_error) {
-        toast.error('소셜 로그인 중 오류가 발생했습니다.')
+        console.error('소셜 로그인 에러:', _error)
+        if (_error.message.includes('component')) {
+          toast.error('인증 컴포넌트 초기화에 실패했습니다. 잠시 후 다시 시도해주세요.')
+        } else {
+          toast.error(`소셜 로그인 중 오류가 발생했습니다: ${_error.message}`)
+        }
       }
     } catch (_error) {
+      console.error('소셜 로그인 예외:', _error)
       toast.error('소셜 로그인 중 오류가 발생했습니다.')
     }
   }
@@ -51,6 +69,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+
+    const supabase = createClient()
+    if (!supabase) {
+      toast.error('인증 서비스 초기화에 실패했습니다.')
+      setIsLoading(false)
+      return
+    }
 
     try {
       const { error: _error } = await supabase.auth.signInWithPassword({
@@ -81,6 +106,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     e.preventDefault()
     setIsLoading(true)
 
+    const supabase = createClient()
+    if (!supabase) {
+      toast.error('인증 서비스 초기화에 실패했습니다.')
+      setIsLoading(false)
+      return
+    }
+
     if (password !== confirmPassword) {
       toast.error('비밀번호가 일치하지 않습니다.')
       setIsLoading(false)
@@ -92,7 +124,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         email,
         password,
         options: {
-          emailRedirectTo: `${location.origin}/auth/callback`,
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || location.origin}/auth/callback`,
         },
       })
 
@@ -154,17 +186,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               />
             </svg>
             Google로 계속하기
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={() => handleSocialLogin('naver')}
-            className="w-full bg-[#03C75A] text-white hover:bg-[#03C75A]/90"
-          >
-            <svg viewBox="0 0 20 20" className="mr-2 h-4 w-4 fill-current">
-              <path d="M13.441 10.72l-4.347 6.315h-4.308l4.347-6.315-4.347-6.315h4.308l4.347 6.315z" />
-            </svg>
-            네이버로 계속하기
           </Button>
 
           <Button
