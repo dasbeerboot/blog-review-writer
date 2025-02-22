@@ -24,6 +24,7 @@ import {
 import { AuthModal } from "@/components/auth-modal"
 import { useAuth } from "@/lib/auth-context"
 import { createClient } from '@/lib/supabase'
+import { toast } from 'sonner'
 
 interface PlaceData {
   id: number
@@ -59,9 +60,13 @@ export function BlockPage() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [showAuthModal, setShowAuthModal] = React.useState(false)
   const { user } = useAuth()
-  const supabase = createClient()
 
   const handleSignOut = async () => {
+    const supabase = createClient()
+    if (!supabase) {
+      toast.error('인증 서비스 초기화에 실패했습니다.')
+      return
+    }
     await supabase.auth.signOut()
   }
 
