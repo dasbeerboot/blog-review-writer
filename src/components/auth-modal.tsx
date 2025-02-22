@@ -43,7 +43,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       if (_error) {
         toast.error('소셜 로그인 중 오류가 발생했습니다.')
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('소셜 로그인 중 오류가 발생했습니다.')
     }
   }
@@ -70,7 +70,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         toast.success('로그인 성공!')
         onClose()
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('로그인 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
@@ -112,7 +112,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         )
         onClose()
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('회원가입 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)

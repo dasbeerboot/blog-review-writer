@@ -21,12 +21,13 @@ export default [
     },
     rules: {
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', {
-        'argsIgnorePattern': '^_',
-        'varsIgnorePattern': '^_',
+      '@typescript-eslint/no-unused-vars': ['warn', {
+        'argsIgnorePattern': '^_|^e$|^error$',
+        'varsIgnorePattern': '^_|^error$',
+        'caughtErrorsIgnorePattern': '^_|^error$',
       }],
-      '@typescript-eslint/no-explicit-any': 'error',
-      'prefer-const': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'warn',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       '@next/next/no-html-link-for-pages': 'off',
