@@ -189,10 +189,10 @@ export function BlockPage() {
               />
             </div>
             <div className="flex gap-3">
-              <Button onClick={() => !user && setShowAuthModal(true)} variant="outline">
+              <Button onClick={handleAddRow} variant="outline">
                 <Plus className="mr-2 h-4 w-4" /> 새로운 업체 추가
               </Button>
-              <Button onClick={() => !user && setShowAuthModal(true)} variant="default">
+              <Button onClick={handleCreateReview} variant="default">
                 <Play className="mr-2 h-4 w-4" /> 리뷰 생성
               </Button>
             </div>
