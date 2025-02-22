@@ -1,18 +1,25 @@
 import eslint from '@eslint/js'
-import * as tseslint from '@typescript-eslint/eslint-plugin'
+import tseslintPlugin from '@typescript-eslint/eslint-plugin'
+import tseslintParser from '@typescript-eslint/parser'
 import nextPlugin from '@next/eslint-plugin-next'
 
 export default [
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
   {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
+      '@typescript-eslint': tseslintPlugin,
       '@next/next': nextPlugin,
-      '@typescript-eslint': tseslint,
+    },
+    languageOptions: {
+      parser: tseslintParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
     },
     rules: {
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 
+      '@typescript-eslint/no-unused-vars': ['error', {
         'argsIgnorePattern': '^_',
         'varsIgnorePattern': '^_',
       }],
