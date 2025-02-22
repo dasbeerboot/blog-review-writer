@@ -33,14 +33,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   const handleSocialLogin = async (provider: CustomProvider) => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error: _error } = await supabase.auth.signInWithOAuth({
         provider: provider as Provider,
         options: {
           redirectTo: `${location.origin}/auth/callback`,
         },
       })
 
-      if (error) {
+      if (_error) {
         toast.error('소셜 로그인 중 오류가 발생했습니다.')
       }
     } catch (error) {
@@ -51,20 +51,20 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: _error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) {
-        if (error.message === 'Email not confirmed') {
+      if (_error) {
+        if (_error.message === 'Email not confirmed') {
           toast.error('이메일 인증을 완료해주세요.')
-        } else if (error.message === 'Invalid login credentials') {
+        } else if (_error.message === 'Invalid login credentials') {
           toast.error('이메일 또는 비밀번호가 올바르지 않습니다.')
         } else {
-          toast.error(error.message)
+          toast.error(_error.message)
         }
       } else {
         toast.success('로그인 성공!')
@@ -88,7 +88,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error: _error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -96,11 +96,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         },
       })
 
-      if (error) {
-        if (error.message === 'User already registered') {
+      if (_error) {
+        if (_error.message === 'User already registered') {
           toast.error('이미 가입된 이메일입니다.')
         } else {
-          toast.error(error.message)
+          toast.error(_error.message)
         }
       } else {
         toast.success(
@@ -173,7 +173,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             className="w-full bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90"
           >
             <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4" fill="currentColor">
-              <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 01-1.727-.11l-4.408 2.883c-.138.092-.3.114-.452.063a.5.5 0 01-.296-.413l-.001-.129V18.5c-2.608-1.425-4.116-3.724-4.116-6.315C1.5 6.664 6.201 3 12 3z"/>
+              <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 01-1.727-.11l-4.408 2.883c-.138.092-.3.114-.452.063a.5.5 0 01-.296-.413l-.001-.129V18.5c-2.608-1.425-4.116-3.724-4.116-6.315C1.5 6.664 6.201 3 12 3z" />
             </svg>
             카카오로 계속하기
           </Button>
