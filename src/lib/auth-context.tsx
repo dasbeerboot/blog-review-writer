@@ -17,9 +17,9 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
   useEffect(() => {
+    const supabase = createClient()
     if (!supabase) {
       console.error('Supabase client could not be created')
       setLoading(false)
@@ -27,20 +27,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // 현재 세션 체크
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+        setLoading(false)
 
-    // 인증 상태 변경 감지
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+        // 인증 상태 변경 감지
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          const newUser = session?.user ?? null
+          // 이전 user와 새로운 user가 다를 때만 상태 업데이트
+          setUser(prevUser => {
+            if (prevUser?.id !== newUser?.id) {
+              return newUser
+            }
+            return prevUser
+          })
+          setLoading(false)
+        })
 
-    return () => subscription.unsubscribe()
+        return () => {
+          subscription.unsubscribe()
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+        setLoading(false)
+      }
+    }
+
+    initializeAuth()
   }, [])
 
   return (
