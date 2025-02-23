@@ -39,10 +39,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
     try {
       console.log('소셜 로그인 시도:', provider)
+
+      const redirectTo = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : '/auth/callback'
+
       const { data, error: _error } = await supabase.auth.signInWithOAuth({
         provider: provider as Provider,
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || location.origin}/auth/callback`,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -120,11 +125,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
 
     try {
+      const redirectTo = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : '/auth/callback'
+
       const { error: _error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || location.origin}/auth/callback`,
+          emailRedirectTo: redirectTo,
         },
       })
 
