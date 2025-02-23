@@ -61,6 +61,10 @@ export function BlockPage() {
   const [showAuthModal, setShowAuthModal] = React.useState(false)
   const { user } = useAuth()
 
+  React.useEffect(() => {
+    console.log('Auth state changed:', user)
+  }, [user])
+
   const handleSignOut = async () => {
     const supabase = createClient()
     if (!supabase) {
@@ -91,6 +95,7 @@ export function BlockPage() {
   }
 
   const handleInputFocus = () => {
+    console.log('Input focus - Current user:', user)
     if (!user) {
       setShowAuthModal(true)
     }
